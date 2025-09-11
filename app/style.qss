@@ -1,0 +1,144 @@
+/* General Styles */
+QWidget {
+    background-color: #ffffff;
+    color: #2e7d32;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+}
+
+QDialog {
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: 2px solid #4caf50;
+}
+
+QLabel {
+    color: #2e7d32;
+}
+
+QLineEdit {
+    padding: 8px;
+    border: 2px solid #4caf50;
+    border-radius: 5px;
+    background-color: #f1f8e9;
+    color: #2e7d32;
+}
+
+QLineEdit:focus {
+    border-color: #388e3c;
+    outline: none;
+    background-color: #ffffff;
+}
+
+QPushButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: #4caf50;
+    color: white;
+}
+
+QPushButton:hover {
+    background-color: #388e3c;
+}
+
+QPushButton:pressed {
+    background-color: #2e7d32;
+}
+
+QPushButton#login_btn {
+    background-color: #4caf50;
+    color: white;
+}
+
+QPushButton#register_btn {
+    background-color: #66bb6a;
+    color: white;
+}
+
+QPushButton#delete_btn {
+    background-color: #f44336;
+    color: white;
+}
+
+QPushButton#upload_btn, QPushButton#process_btn {
+    background-color: #81c784;
+    color: white;
+}
+
+QPushButton#admin_btn {
+    background-color: #4caf50;
+    color: white;
+}
+
+QPushButton#user_login_btn {
+    background-color: #66bb6a;
+    color: white;
+}
+
+QPushButton#back_btn {
+    background-color: #a5d6a7;
+    color: #2e7d32;
+}
+
+QListWidget {
+    border: 2px solid #4caf50;
+    border-radius: 5px;
+    background-color: #f1f8e9;
+    color: #2e7d32;
+}
+
+QListWidget::item {
+    padding: 5px;
+    border-bottom: 1px solid #c8e6c9;
+}
+
+QListWidget::item:selected {
+    background-color: #a5d6a7;
+    color: #2e7d32;
+}
+
+QTextEdit {
+    border: 2px solid #4caf50;
+    border-radius: 5px;
+    background-color: #f1f8e9;
+    color: #2e7d32;
+    padding: 5px;
+}
+
+QCheckBox {
+    spacing: 5px;
+    color: #2e7d32;
+}
+
+QCheckBox::indicator {
+    width: 15px;
+    height: 15px;
+    border: 2px solid #4caf50;
+    border-radius: 3px;
+    background-color: #f1f8e9;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #4caf50;
+    border-color: #4caf50;
+}
+
+QFormLayout {
+    spacing: 10px;
+}
+
+QVBoxLayout, QHBoxLayout {
+    spacing: 10px;
+}
+
+/* Title */
+QLabel#title_label {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin-bottom: 20px;
+}
+
+/* Animation for upload button - removed as not supported in QSS */

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 64 64" aria-hidden="true">
+  <defs>
+    <linearGradient id="p1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7bff6b"/>
+      <stop offset="100%" stop-color="#2fc94b"/>
+    </linearGradient>
+    <radialGradient id="p2" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.04"/>
+    </radialGradient>
+  </defs>
+  <rect rx="12" ry="12" width="64" height="64" fill="#071014"/>
+  <g transform="translate(8,8)">
+    <rect x="0" y="0" width="48" height="48" rx="10" fill="url(#p1)"/>
+    <rect x="0" y="0" width="48" height="48" rx="10" fill="url(#p2)"/>
+    <g transform="translate(9,9) scale(0.9)" fill="#073"> 
+      <circle cx="8" cy="8" r="7" fill="#fff" opacity="0.08"/>
+      <path d="M2 8 A6 6 0 1 0 14 8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <polyline points="8,2 8,8 12,10" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,16 @@
+- [x] Enhance GUI User-Friendliness: Update styles in style.qss for modern look (colors, fonts, spacing)
+- [ ] Enhance GUI User-Friendliness: Add icons to buttons and improve layouts in ui.py
+- [ ] Enhance GUI User-Friendliness: Make dialogs resizable and add tooltips
+- [ ] Differentiate Admin and User Pages: Modify Dashboard to show different content based on user.is_admin
+- [ ] Differentiate Admin and User Pages: Admin Dashboard: Add sections for user management, activity logs, threat alerts
+- [ ] Differentiate Admin and User Pages: User Dashboard: Keep file upload/process, remove admin features
+- [x] Activity Tracking: Add ActivityLog table to models.py
+- [ ] Activity Tracking: Log actions like login, file upload, process, share in auth.py and ui.py
+- [ ] Block Unwanted Actions: Add checks in ui.py to block actions based on user role or activity flags
+- [ ] Block Unwanted Actions: Implement user blocking in admin panel
+- [ ] AI Threat Detection and Notifications: Extend ai_processor.py to analyze activity logs for threats
+- [ ] AI Threat Detection and Notifications: Add notification system in ui.py to alert admin of threats
+- [ ] Handle admin/user routing in main.py
+- [ ] Test GUI changes visually
+- [ ] Test activity logging and threat detection
+- [ ] Verify admin notifications
