@@ -1,16 +1,17 @@
-- [x] Enhance GUI User-Friendliness: Update styles in style.qss for modern look (colors, fonts, spacing)
-- [ ] Enhance GUI User-Friendliness: Add icons to buttons and improve layouts in ui.py
-- [ ] Enhance GUI User-Friendliness: Make dialogs resizable and add tooltips
-- [ ] Differentiate Admin and User Pages: Modify Dashboard to show different content based on user.is_admin
-- [ ] Differentiate Admin and User Pages: Admin Dashboard: Add sections for user management, activity logs, threat alerts
-- [ ] Differentiate Admin and User Pages: User Dashboard: Keep file upload/process, remove admin features
-- [x] Activity Tracking: Add ActivityLog table to models.py
-- [ ] Activity Tracking: Log actions like login, file upload, process, share in auth.py and ui.py
-- [ ] Block Unwanted Actions: Add checks in ui.py to block actions based on user role or activity flags
-- [ ] Block Unwanted Actions: Implement user blocking in admin panel
-- [ ] AI Threat Detection and Notifications: Extend ai_processor.py to analyze activity logs for threats
-- [ ] AI Threat Detection and Notifications: Add notification system in ui.py to alert admin of threats
-- [ ] Handle admin/user routing in main.py
-- [ ] Test GUI changes visually
-- [ ] Test activity logging and threat detection
-- [ ] Verify admin notifications
+# TODO: Improve Functions in Secure AI App
+
+## Step 1: Refactor duplicated login and registration code in main.py ✅
+- Create helper functions `attempt_login` and `attempt_register` to handle both user and admin flows
+- Reduce code duplication between user and admin login/registration dialogs
+
+## Step 2: Enhance error handling and logging in auth.py ✅
+- Add try-except blocks and logging to `register_user`, `authenticate_user`, `list_users`, `log_activity`, `send_verification_email`
+- Improve exception handling for database operations and email sending
+
+## Step 3: Add activity logging for user actions in main.py ✅
+- Integrate `log_activity` calls for successful logins, registrations, and failed attempts
+- Ensure activity logs capture relevant details like username and action type
+
+## Step 4: Test and verify improvements ✅ 
+- Run the application to ensure login, registration, and logging work correctly
+- Check logs for proper error handling and activity tracking
