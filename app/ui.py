@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QTextEdit, QFileDialog,
-    QListWidget, QCheckBox, QMessageBox, QDialog, QFormLayout, QProgressBar, QProgressBar
+    QListWidget, QCheckBox, QMessageBox, QDialog, QFormLayout, QProgressBar, QGridLayout
 )
 from PySide6.QtCore import Qt, QPropertyAnimation
 from PySide6.QtGui import QIcon
@@ -62,17 +62,18 @@ class LoginDialog(QDialog):
         self.pw_edit = QLineEdit()
         self.pw_edit.setEchoMode(QLineEdit.Password)
         self.pw_edit.setPlaceholderText("Enter password")
-        self.show_pw_check = QCheckBox("Show Password")
-        # Create a horizontal layout for password field and checkbox
+        self.show_pw_btn = QPushButton("Show Password")
+        self.show_pw_btn.setCheckable(True)
+        # Create a horizontal layout for password field and button
         pw_layout = QHBoxLayout()
         pw_layout.addWidget(self.pw_edit)
-        pw_layout.addWidget(self.show_pw_check)
+        pw_layout.addWidget(self.show_pw_btn)
         form.addRow("Username:", self.user_edit)
         form.addRow("Email:", self.email_edit)
         form.addRow("Password:", pw_layout)
         layout.addLayout(form)
 
-        self.show_pw_check.stateChanged.connect(self.toggle_password_visibility)
+        self.show_pw_btn.clicked.connect(self.toggle_password_visibility)
 
         # Remember me and forgot password
         options_layout = QHBoxLayout()
@@ -103,11 +104,13 @@ class LoginDialog(QDialog):
         self.forgot_btn.clicked.connect(self.forgot_password)
 
 
-    def toggle_password_visibility(self, state):
-        if state == Qt.Checked:
+    def toggle_password_visibility(self):
+        if self.show_pw_btn.isChecked():
             self.pw_edit.setEchoMode(QLineEdit.Normal)
+            self.show_pw_btn.setText("Hide Password")
         else:
             self.pw_edit.setEchoMode(QLineEdit.Password)
+            self.show_pw_btn.setText("Show Password")
 
     def forgot_password(self):
         # Simple placeholder for forgot password functionality
@@ -148,10 +151,10 @@ class AdminDialog(QDialog):
         email = self.new_email.text().strip()
         pw = self.new_pw.text().strip()
         is_admin = self.admin_check.isChecked()
-        if not username or not pw:
-            QMessageBox.warning(self, "Invalid", "username and password required")
+        if not username or not pw or not email:
+            QMessageBox.warning(self, "Invalid", "username, password and email required")
             return
-        ok, msg = register_user(username, pw, email, is_admin)
+        ok, msg, email_sent, user_id = register_user(username, pw, email, is_admin)
         if not ok:
             QMessageBox.warning(self, "Error", msg)
             return
@@ -223,6 +226,12 @@ class Dashboard(QWidget):
         left.addWidget(self.share_btn)
         self.share_btn.clicked.connect(self.share_selected_file)
 
+        # File Transfer button
+        self.transfer_btn = QPushButton("Open File Transfer")
+        self.transfer_btn.setStyleSheet("background-color: #4CAF50; color: white;")
+        left.addWidget(self.transfer_btn)
+        self.transfer_btn.clicked.connect(self.open_file_transfer)
+
         # AI output
         self.output_view = QTextEdit()
         self.output_view.setReadOnly(True)
@@ -276,7 +285,6 @@ class Dashboard(QWidget):
 
         # Activity Logs Section
         right.addWidget(QLabel("Activity Logs"))
-        from PySide6.QtWidgets import QWidget, QGridLayout, QVBoxLayout, QLabel
         self.activity_widget = QWidget()
         self.activity_layout = QGridLayout()
         self.activity_widget.setLayout(self.activity_layout)
@@ -298,7 +306,7 @@ class Dashboard(QWidget):
         self.files_list.clear()
         db = SessionLocal()
         try:
-            rows = db.query(FileRecord).filter(FileRecord.owner == self.user.username).all()
+            rows = db.query(FileRecord).filter(FileRecord.user_id == self.user.id).all()
             for r in rows:
                 self.files_list.addItem(f"{r.id}: {r.filename} ({r.storage_name})")
         finally:
@@ -313,7 +321,7 @@ class Dashboard(QWidget):
         storage = save_encrypted_file(self.user.username, os.path.basename(path), data)
         db = SessionLocal()
         try:
-            rec = FileRecord(filename=os.path.basename(path), owner=self.user.username, storage_name=storage)
+            rec = FileRecord(filename=os.path.basename(path), user_id=self.user.id, storage_name=storage)
             db.add(rec); db.commit()
             log_activity(self.user.id, "file_upload", f"Uploaded file: {rec.filename}")
         finally:
@@ -399,6 +407,47 @@ class Dashboard(QWidget):
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Failed to share file: {str(e)}")
 
+    def open_file_transfer(self):
+        from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton
+        dlg = QDialog(self)
+        dlg.setWindowTitle("File Transfer")
+        dlg.setMinimumWidth(400)
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Enter the shared file URL to download:"))
+        self.url_edit = QLineEdit()
+        self.url_edit.setPlaceholderText("http://ip:port/download")
+        layout.addWidget(self.url_edit)
+        btn_layout = QHBoxLayout()
+        download_btn = QPushButton("Download")
+        download_btn.clicked.connect(lambda: self.download_file(dlg))
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.clicked.connect(dlg.reject)
+        btn_layout.addWidget(download_btn)
+        btn_layout.addWidget(cancel_btn)
+        layout.addLayout(btn_layout)
+        dlg.setLayout(layout)
+        dlg.exec()
+
+    def download_file(self, dlg):
+        url = self.url_edit.text().strip()
+        if not url:
+            QMessageBox.warning(dlg, "Invalid", "Please enter a URL")
+            return
+        save_path, _ = QFileDialog.getSaveFileName(dlg, "Save file as")
+        if not save_path:
+            return
+        try:
+            import urllib.request
+            with urllib.request.urlopen(url) as response:
+                data = response.read()
+            with open(save_path, "wb") as f:
+                f.write(data)
+            QMessageBox.information(dlg, "Downloaded", f"File downloaded to {save_path}")
+            log_activity(self.user.id, "file_download", f"Downloaded file from {url}")
+            dlg.accept()
+        except Exception as e:
+            QMessageBox.warning(dlg, "Error", f"Failed to download: {str(e)}")
+
     def refresh_admin_data(self):
         # Refresh users list
         self.users_list.clear()
@@ -415,7 +464,7 @@ class Dashboard(QWidget):
 
         db = SessionLocal()
         try:
-            from server.models import ActivityLog
+            from app.models import ActivityLog
             logs = db.query(ActivityLog).order_by(ActivityLog.timestamp.desc()).limit(20).all()
 
             # Map action types to icons (use placeholder icons or paths)
@@ -468,7 +517,7 @@ class Dashboard(QWidget):
         self.threat_list.clear()
         db = SessionLocal()
         try:
-            from server.models import ThreatDetection
+            from app.models import ThreatDetection
             threats = db.query(ThreatDetection).filter(ThreatDetection.status == 'active').order_by(ThreatDetection.detected_at.desc()).limit(10).all()
             for threat in threats:
                 self.threat_list.addItem(f"{threat.detected_at}: File {threat.file_id} - {threat.threat_type} ({threat.confidence}%)")
@@ -482,13 +531,14 @@ class Dashboard(QWidget):
         email = self.new_email.text().strip()
         pw = self.new_pw.text().strip()
         is_admin = self.admin_check.isChecked()
-        if not username or not pw:
-            QMessageBox.warning(self, "Invalid", "username and password required")
+        if not username or not pw or not email:
+            QMessageBox.warning(self, "Invalid", "username, password and email required")
             return
-        ok, msg = register_user(username, pw, email, is_admin)
+        ok, msg, email_sent, user_id = register_user(username, pw, email, is_admin)
         if not ok:
             QMessageBox.warning(self, "Error", msg)
             return
+        log_activity(self.user.id, "user_create", f"Created user {username} (ID: {user_id})")
         self.new_user.clear(); self.new_email.clear(); self.new_pw.clear(); self.admin_check.setChecked(False)
         self.refresh_admin_data()
         QMessageBox.information(self, "OK", "User created")
